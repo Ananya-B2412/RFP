@@ -12,6 +12,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 options(knitr.table.format = "latex")
+# change
 
 
 ```
