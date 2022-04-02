@@ -1,0 +1,425 @@
+---
+title: "Resource File Project - Phase 3"
+author: 
+  Ananya Balike, 
+  Soham Beharie, 
+  Hardik Shrestha | 
+  Group 112
+date: "09/03/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
+options(knitr.table.format = "latex")
+
+
+```
+# DATASET INFORMATION
+
+### Importing .CSV file into R markdown
+
+In order to import a .CSV file into R markdown in a \emph{non-path specific} way, one must use the following code:
+```{r}
+# import dataset
+data <- read.csv(file="./rfp.csv")
+
+# load packages
+library(kableExtra)
+library("data.table")
+library(car)
+
+```
+
+## Brief Overview
+
+The World Happiness Report is a landmark survey of the state of global happiness. The report reviews the state of happiness in various countries in 2019 based on key measurements of well-being.
+
+## Columns and Rows
+
+There are 9 columns (Overall rank, Country or Region, Score, GDP per capita, Social Support, Healthy Life Expectancy, Freedom To Make Life Choices, Generosity, Perceptions of Corruption and Residual Value). There are 157 rows (157) where the first row represents the header names. 
+
+## Variables
+
+```{r, echo = FALSE}
+table <- read.csv(file="./table.csv", fileEncoding="UTF-8-BOM")
+tableFormatted <- kable(table, format = "latex", booktabs = TRUE, align = c("l","r","r")) %>%  
+             column_spec(1, width = "8em", bold = T, border_right = T) %>%
+              column_spec(2, width = "22em", background = "lightgray") %>%
+              column_spec(3, width = "12em", background = "white")
+
+tableFormatted
+
+```
+
+## Reference for Dataset
+
+Network, S. D. S. (2019, November 27). World happiness report. Kaggle. Retrieved February 18, 2022, from $\text{\underline{https://www.kaggle.com/unsdsn/world-happiness?select=2019.csv}}$ 
+
+World happiness report 2019. World Happiness Report 2019. (n.d.). Retrieved February 18, 2022, from $\text{\underline{https://worldhappiness.report/ed/2019/}}$
+ 
+\newpage  
+
+# PROBLEM
+
+## Research Objective
+
+To investigate the effects of GDP per capita, social support, healthy life expectancy, generosity, freedom to make decisions and perception of corruption on a country’s overall happiness score and consequent ranking in 2019.
+
+## Research Questions
+
+1. What is the expected social support score of a country for 2019?  
+
+2. How does a country’s overall rank differ across the social support its individuals receive and GDP per capita in 2019?  
+
+3. How does a country’s GDP (Gross Domestic Product) per capita affect its overall happiness score in 2019?  
+
+4. How does a country’s social support, healthy life expectancy, generosity and freedom to make decisions affect its overall happiness score in 2019?  
+
+5. How effective is a country’s GDP per capita, social support, healthy life expectancy, generosity, freedom to make decisions and perception on its overall happiness score and subsequent ranking in 2019?  
+
+
+
+
+# PLAN
+
+\textbf{\emph{Note:}} *The following section includes made-up aspects for practicality purposes - about 95% is summarized based on the actual study conducted by WHO, and about 5% is creative elements*
+
+### Population of Interest
+
+Every adult (18-65) from every country of the world in 2019
+
+### Sampling Frame
+
+Every adult (18-65) from every country having access to Gallop World Poll [$\text{\underline{Gallup World Poll}}$](https://www.gallup.com/analytics/318875/global-research.aspx) in 2019
+(see sampling design for more details)
+
+### Sample
+
+$\text{\underline{Approved}}$ collective of individuals (adults, 18-65) who respond to Gallup World Poll (GWP) in 2019
+(see sampling design for more details)
+
+## Sampling Design
+
+The \textbf{research objective} is \textbf{causative} and this is an \textbf{observational study}. The \textbf{sampling design} applied is \textbf{multistage sampling}, including \textbf{stratified sampling} and \textbf{non-probability non-response bias}. The \textbf{sampling frame} is narrowed down through \textbf{stratifying} individuals based on the \textbf{selected variable}, countries. Then, a \textbf{subset} of units is drawn from each \textbf{stratum} (i.e. each country). \emph{(Note: selecting a broad \textbf{sampling frame} may \textbf{increase variation}.)} The \textbf{subset} of units is as follows: GWP includes at least 1000 individuals (\textbf{datapoints}) per country, whereas in some large countries, a \textbf{sample size} of at least 2000 is collected–and in rare cases, the sample size may be between 500-1000. Any \textbf{sample size} below this \textbf{threshold} would result in the omission of that country for the \textbf{dataset}. As this is a survey regarding one’s perception of their country, \textbf{non-response bias} and \textbf{response bias} are unavoidable in certain countries (perhaps due to sheer unwillingness, civil wars, dictatorship, etc.). However, GWP is meant to represent more than 99% of the adult (18-65) \textbf{population}. \textbf{Potential explanatory variables} and \textbf{confounding variables} leading to \textbf{sampling variability} and \textbf{undercoverage}:
+
++-------------------------------+-------------------------+
+|Potential Explanatory Variables| Confounding Variables   |
++===============================+=========================+
+|* GDP per capita               |* Response bias          |
++-------------------------------+-------------------------+
+|* Social support               |* Stress-factor          |
++-------------------------------+-------------------------+
+|* Healthy life expectancy      |* Lifestyles             |
++-------------------------------+-------------------------+
+|* Generosity                   |* Socio Cultural impacts |
++-------------------------------+-------------------------+
+|* Freedom to make decisions    |* Civil wars/wars        |
++-------------------------------+-------------------------+
+|* Perception of corruption     |* Type of government     |
++-------------------------------+-------------------------+
+
+This \textbf{sampling design} attempts to achieve \textbf{generalizability} for adults (18-65) in accordance with the \textbf{research objective}.
+
+## Study Design
+
+The World Happiness Report (WHR) uses \textbf{data} collected by the Gallup World Poll (GWP). The GWP uses two primary \textbf{study designs}. Both are \textbf{observational} study designs, where data is collected as is, without the imposition of external \textbf{conditions}. In countries where 80% or more of the population has landline telephones, GWP uses a Random-Digit-Dial telephone survey. The primary \textbf{confounding variable} is \textbf{undercoverage}, many individuals choose not to participate in phone surveys. In developing nations, an \textbf{area frame design} is used for face-to-face interviewing.  An area frame is made up of a hierarchy of geographical units which contain the \textbf{survey population}. The total land area of a country is broken down into smaller \textbf{sampling units}. Of all these \textbf{sampling units}, a \textbf{subset} will be \textbf{randomly} selected for face-to-face interviewing. The GWP sample represents all parts of each country, including all rural areas. Hence, the WHR also incorporates those subjects and is thus \textbf{generalizable} to the \textbf{population of interest}. The questionnaire is translated into the major languages of each country and \textbf{quality control} procedures are present such that the correct person is randomly selected in each household using the \textbf{Kish Grid}.
+
+
+# DATA
+
+### Summarizing and Exploring Data - Comprehensive Resource 
+
+## Numerical Summaries
+
+#### Relative/Frequency distributions
+
+* Summarizes data: categorical, quantitative; univariate, bivariate, or multivariate  
+
+Question: How many countries in the world are generally unhappy (a score of 0.0 to 4.0) and how many are generally happy (a score of more than 4.0)?
+
+*Note: the current example is univariate. To make a bivariate or multivariate frequency distribution, the function table(x,y) can be used, where `x` and `y` are variables to be represented.*
+
+```{r, echo = TRUE}
+# create categories "generally happy" (0.0-4.0) and "generally unhappy" (4.0+)
+
+genUn <- sum(data$Score<=4, na.rm= TRUE)
+genHa <- sum(data$Score>4, na.rm= TRUE)
+merged <- table(cat=rep(c('generally unhappy', 'generally happy'), each=1),
+                     dat=rep(c(genUn, genHa)))
+
+merged
+
+```
+
+#### Mean
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the average social support score of a country?
+
+```{r, echo = TRUE}
+
+summary02 <- mean(data$Social_support)
+summary02
+
+```
+
+#### Median
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the median value of health life expectancy for all countries?
+
+```{r, echo = TRUE}
+
+summary03 <- median(data$Healthy_life_expectancy)
+summary03
+
+```
+
+#### Minimum
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the lowest residual value score of a country?
+
+```{r, echo = TRUE}
+
+summary04 <- min(data$Residual_value)
+summary04
+
+```
+
+#### Maximum
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the highest generosity score of a country?
+
+```{r, echo = TRUE}
+
+summary05 <- max(data$Generosity)
+summary05
+
+```
+
+#### Range 
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the difference between the lowest and highest values of overall score?
+
+```{r, echo = TRUE}
+
+summary06 <- range(data$Score)
+summary06
+
+```
+
+#### Interquartile range
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the range of the middle 50% of the values of GDP per capita?
+
+```{r, echo = TRUE}
+
+summary07 <- IQR(data$GDP_per_capita)
+summary07
+```
+
+#### Variance 
+
+* Summarizes data: quantitative; univariate  
+
+Question: What is the degree of spread (variance) in social support scores among countries?
+
+```{r, echo = TRUE}
+    
+summary08 <- var(data$Social_support)
+summary08
+
+```
+
+#### Standard deviation
+
+* Summarizes data: quantitative; univariate  
+
+Question: How dispersed is the `Perceptions of corruption` data in relation to its mean?
+
+```{r, echo = TRUE}
+
+summary09 <- sd(data$Perceptions_of_corruption)
+summary09
+
+```
+
+## Graphical Summaries
+
+#### Bar graph
+
+* Summarizes data: categorical, quantitative; univariate, bivariate, or multivariate  
+
+Question: How does a country’s rank affect the spread of the middle 50% of the score?
+
+*Note: the current example is bivariate. Multiple variables can be incorporated through paired bars.*
+
+```{r, echo = TRUE}
+
+bar.sub01 <- subset(data, Overall_rank<=52, select = c(Score))
+bar.sub02 <- subset(data, Overall_rank<=104 & Overall_rank>52, select = c(Score))
+bar.sub03 <- subset(data, Overall_rank>104, select = c(Score))
+
+bar.sub01.IQR <- as.numeric(IQR(bar.sub01$Score))
+bar.sub02.IQR <- as.numeric(IQR(bar.sub02$Score))
+bar.sub03.IQR <- as.numeric(IQR(bar.sub03$Score))
+
+bar.mat = data.matrix(data.table(IQR_of_Score = 
+                                   c(bar.sub01.IQR, bar.sub02.IQR, bar.sub03.IQR)))
+barplot(bar.mat, beside = TRUE, 
+        col = c("red", "green", "steelblue"), 
+        xlab = "Country Rank",
+        ylab = "IQR of Score",
+        name = c('low rank', 'mid rank','high rank'))
+
+```
+
+#### Mosaic plot
+
+* Summarizes data: categorical; bivariate, multivariate  
+
+Question: What is the relationship between score and GDP per Capita?
+
+*Note: the current example is bivariate. To make a multivariate mosaic plot, multiple variables can be represented for the widths/lengths of the rectangles (i.e. areas).*
+
+```{r, echo = TRUE}
+
+data$Score <- as.numeric(data$Score)
+data$GDP_per_capita <- as.numeric(data$GDP_per_capita)
+
+mos.scoreHi <- as.numeric(sum(data$Score>7, na.rm= TRUE))
+mos.scoreMid <- as.numeric(sum(data$Score>5 & data$Score <= 7, na.rm= TRUE))
+mos.scoreLo <- as.numeric(sum(data$Score<5, na.rm= TRUE))
+
+mos.gdpHi <- as.numeric(sum(data$GDP_per_capita>1.1, na.rm= TRUE))
+mos.gdpMid <- as.numeric(sum(data$GDP_per_capita>.9 & data$GDP_per_capita <= 1.1,
+                             na.rm= TRUE))
+mos.gdpLo <- as.numeric(sum(data$GDP_per_capita<.9, na.rm= TRUE))
+
+mos.df <- data.frame(score = c(mos.scoreHi, mos.scoreMid, mos.scoreLo), 
+           GDP_per_capita = c(mos.gdpHi, mos.gdpMid, mos.gdpLo))
+mos.mat <- as.matrix(mos.df)
+rownames(mos.mat) <- c('low rank', 'mid rank','high rank')
+colnames(mos.mat) <- c('low gdp','high gdp')
+
+mosaicplot(mos.mat, main = "Mosaic plot of score and GDP per Capita", col = rainbow(2))
+
+```
+
+#### Histograms
+
+* Summarizes data: quantitative; univariate  
+
+Question: How do all countries freedom to make life choices compare?
+
+```{r, echo = TRUE}
+
+hist(data$Freedom_to_make_life_choices, main = "Ability to make life choices by country",
+     col ="steelblue", xlab = "Freedom to make choices", ylab = "Frequency")
+
+```
+
+#### Box Plots
+
+* Summarizes data: quantitative; univariate, bivariate, multivariate  
+
+Question: How does a countries ranking affect its perception of corruption?
+
+*Note: the current example is univariate. To make a bivariate or multivariate boxplot, multiple variables may be represented on the x axis, and the consequent y axis would simply be `score` (as opposed to `corruption score`)* 
+
+```{r, echo = TRUE}
+
+boxplot(data$Perceptions_of_corruption, xlab = "Perception of corruption",
+        ylab = "Corruption score")
+
+```
+
+#### Stripcharts
+
+* Summarizes data: quantitative; univariate  
+
+Question: How does health life expectancy vary across countries?
+
+```{r, echo = TRUE}
+
+stripchart(data$Healthy_life_expectancy,
+           main = 'Country variance in Health life expectancy',
+           xlab = 'Country',
+           col = 'red',
+           pch = 1,
+           method = 'jitter',
+           ylab = "Healthy life expectancy")
+
+```
+
+#### Scatterplots
+
+* Summarizes data: quantitative; bivariate/multivariate  
+
+Question: What is the relationship between the social support a country receives and its GDP per capita?
+
+*Note: the current example is bivariate. To make it univariate, remove one of the variables as an argument. To make it multivariate, add new variables followed by a comma after data$GDP_per_capita. Multiple variables may be represented with different colours.
+
+```{r, echo = TRUE}
+
+# This is the graph showcasing characteristics of good figures
+
+plot(data$Social_support, data$GDP_per_capita, 
+     xlab="GDP per Capita", ylab="Social Support", 
+     main = "The correlation between social support score
+     and GDP per capita across countries.\n",
+     sub = "Respective country's GDP divided by its total population.",
+     col.main="red", col.lab="blue", col.sub="black",
+     col = c("steelblue", "red"))
+
+```
+
+# ANALYSIS
+
+### Analyzing Data - Comprehensive Resource 
+
+# CONCLUSION
+
+### Conclusion Examples
+
+
+
+
+# HELPFUL HINTS/REMINDERS
+
+1. When uploading data to the environment, do not forget to include brackets and quotation marks around the file name  
+
+2. When creating a custom table manually, follow these guidelines:  
+
+* use | to indicate start and end of columns in table  
+* use - to separate rows in table  
+* use = to create lines in table  
+* use + to indicate corners of each table cell  
+* essentially, the 'code' should look like a table itself  
+
+3. When creating an ordered or bulleted list, do not forget the two spaces at the end  
+
+
+# GROUP REFLECTION
+
+
+
+```{r}
+# REMOVE THIS LATER:
+
+res <- as.numeric(list(0.5, 0.3, 0.4))
+mean(res)
+
+```
+
